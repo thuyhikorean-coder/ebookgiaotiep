@@ -1,0 +1,32 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kiểm tra kết nối Hi Korean</title><body style="font:18px Arial;padding:32px;max-width:700px;margin:auto"><h1>Kiểm tra kết nối đăng ký</h1><p>Lượt kiểm thử kỹ thuật, không phải đăng ký học viên.</p><button id="send" style="padding:18px;font:inherit">Gửi lượt kiểm thử</button><pre id="result" style="white-space:pre-wrap" role="status"></pre><script>'use strict';
+(function () {
+  // Public submission endpoint. This is not a credential or a Sheets read API.
+  const endpoint = 'https://script.google.com/macros/s/AKfycbxFekXC0fEs68qXGCHnFivE4ykEwBnUQJYN-gMHWLM_hk7PWwNAH1ruROPGg4f2Y_9F/exec';
+  async function submit(payload) {
+    if (!endpoint) throw new Error('NOT_CONFIGURED');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 45000);
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        credentials: 'omit',
+        redirect: 'follow',
+        body: JSON.stringify({action: 'register_ebook', ...payload}),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error('HTTP_' + response.status);
+      const receipt = await response.json();
+      if (receipt.status !== 'success' || receipt.submissionId !== payload.submissionId) {
+        throw new Error(receipt.code || 'INVALID_RECEIPT');
+      }
+      return receipt;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  window.HiKoreanRegistration = Object.freeze({submit});
+})();
+
+document.getElementById('send').onclick=async function(){this.disabled=true;const output=document.getElementById('result');output.textContent='Đang gửi…';try{const receipt=await HiKoreanRegistration.submit({submissionId:'test-public-hikorean-20261016',registration:{name:'KIỂM THỬ KẾT NỐI — KHÔNG PHẢI HỌC VIÊN',phone:'0900000000',email:'integration-test@example.com',student:'Chưa từng học',duration:'Dưới 6 tháng',topik:'Chưa từng thi',level:''},survey:[['0'],['0'],['0'],['0']]});output.textContent=JSON.stringify(receipt,null,2);}catch(e){output.textContent=e.name+': '+e.message;}finally{this.disabled=false;}};
+</script></body></html>
