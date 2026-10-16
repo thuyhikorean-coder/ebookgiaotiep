@@ -18,9 +18,9 @@ DNS cần được cấu hình tại nhà cung cấp tên miền. Không thay đ
 
 ## Hiện trạng chức năng
 
-Đăng ký, khảo sát và tiến độ lưu trong localStorage của trình duyệt. Chưa gửi thông tin về Hi Korean, chưa kết nối Google Sheets/CRM/email. Không có hệ thống tài khoản hay mật khẩu. Video Shadowing, toàn bộ nội dung bài học, các liên kết quà tặng và CTA Zalo được đóng gói sẵn.
+Khi học viên hoàn tất đăng ký và khảo sát, form gửi dữ liệu tới bộ nhận Google Apps Script thuộc nguyenphuongthuy@hikorean.vn. Bộ nhận chỉ thêm dòng vào tab EBOOKGIAOTIEP (sheetId 897791773) của file DATA 2026. Không sửa các tab khác. Mã đăng ký ngăn việc gửi lại tạo dòng trùng; form chỉ mở khóa khi nhận xác nhận thành công. Tiến độ vẫn lưu trên trình duyệt. Chưa có hệ thống tài khoản/mật khẩu hay gửi email tự động. Video Shadowing, toàn bộ nội dung bài học, các liên kết quà tặng và CTA Zalo được đóng gói sẵn.
 
-Thanh vàng “Bản mẫu để duyệt” đã bỏ. Website đang giữ thẻ noindex của bản duyệt; có thể bỏ khi chốt phát hành/tên miền chính thức.
+Tên miền đã bật Enforce HTTPS. Thanh vàng “Bản mẫu để duyệt” đã bỏ. Website đang giữ thẻ noindex của bản duyệt; có thể bỏ khi chốt phát hành/tên miền chính thức.
 
 ## Tài liệu triển khai chính thức
 
