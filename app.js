@@ -71,7 +71,7 @@ function render(){document.body.dataset.screen=page===0?'registration':'journey'
 function go(target,unlock=false){if(registrationSending){toast('Đang gửi thông tin, bạn chờ một chút nhé.');return;}if(target<0||target>10)return;if(unlock&&target===state.max+1)state.max=target;if(target===10?state.max<4:target>state.max){toast('Hãy hoàn thành phần trước để mở khóa nội dung này.');return;}page=target;history.pushState(null,'','#'+routes[page]);render();window.scrollTo(0,0);$('#main').focus({preventScroll:true});}
 function next(){if(page<2)return;if(page===9){state.finished=true;save();render();toast('Bạn đã mở khóa toàn bộ hành trình!');return;}go(page+1,true);}
 function bindPage(){
- const form=$('#registration');if(form){form.addEventListener('submit',e=>{e.preventDefault();let r=Object.fromEntries(new FormData(form));if(!r.name.trim()||!r.phone.trim()||!r.email.trim()){$('#reg-error').textContent='Vui lòng điền họ tên, số điện thoại và email.';return;}if(!form.reportValidity())return;if(!r.topik.startsWith('Đã thi'))r.level='';state.registration=r;state.max=Math.max(state.max,1);go(1);});$('#topik').addEventListener('change',e=>{$('#level-field').hidden=!e.target.value.startsWith('Đã thi');});}
+ const form=$('#registration');if(form){form.addEventListener('submit',e=>{e.preventDefault();let r=Object.fromEntries(new FormData(form));if(!r.name.trim()||!r.phone.trim()||!r.email.trim()){$('#reg-error').textContent='Vui lòng điền họ tên, số điện thoại và email.';return;}if(!form.reportValidity())return;if(!r.topik.startsWith('Đã thi'))r.level='';state.registration=r;state.max=Math.max(state.max,1);go(1);showWebinarInvite();});$('#topik').addEventListener('change',e=>{$('#level-field').hidden=!e.target.value.startsWith('Đã thi');});}
  const sf=$('#survey');if(sf)sf.addEventListener('submit',async e=>{e.preventDefault();if(registrationSending)return;let f=new FormData(sf);let answers=QUESTIONS.map((_,i)=>f.getAll('q'+i));let missing=answers.findIndex(a=>!a.length);if(missing>=0){$('#survey-error').textContent=`Bạn hãy chọn ít nhất một đáp án cho câu ${missing+1}.`;$('#question-'+missing).scrollIntoView({behavior:'smooth',block:'center'});$('#question-'+missing+' details').open=true;$('#question-'+missing+' input').focus({preventScroll:true});return;}if(registrationSending)return;
  state.survey=answers;
  const signature=JSON.stringify({registration:state.registration,survey:answers});
@@ -103,3 +103,14 @@ $('#ebook-dialog').addEventListener('cancel',()=>go(1));
 $('#review-open')?.addEventListener('click',()=>$('#review-dialog').showModal());$('#menu-open').addEventListener('click',()=>go(3));$('#reset-open').addEventListener('click',()=>{$('#review-dialog').close();$('#reset-dialog').showModal();});$('#reset-confirm').addEventListener('click',()=>{$('#reset-dialog').close();state=fresh();page=0;save();history.replaceState(null,'','#dang-ky');render();window.scrollTo(0,0);});
 window.addEventListener('popstate',()=>{if(registrationSending){history.replaceState(null,'','#'+routes[page]);return;}let target=routes.indexOf(location.hash.slice(1));page=target===10&&state.max>=4?10:target>=0&&target<=state.max?target:state.max;history.replaceState(null,'','#'+routes[page]);render();window.scrollTo(0,0);});
 let target=routes.indexOf(location.hash.slice(1));if(target>=0)page=target===10&&state.max>=4?10:Math.min(target,state.max);else page=0;history.replaceState(null,'','#'+routes[page]);render();
+
+function showWebinarInvite(){
+ const invite=$('#webinar-invite');
+ if(!invite.open)invite.showModal();
+}
+$('#webinar-invite').addEventListener('close',()=>$('#main').focus({preventScroll:true}));
+$('#webinar-invite').addEventListener('click',e=>{
+ if(e.target!==e.currentTarget)return;
+ const rect=e.currentTarget.getBoundingClientRect();
+ if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)e.currentTarget.close();
+});
